@@ -36,6 +36,7 @@ class StackOverflowSuite extends FunSuite with BeforeAndAfterAll {
     val raw: RDD[Posting]                                  = rawPostings(lines)
     val grouped: RDD[(Int, Iterable[(Posting, Posting)])]  = groupedPostings(raw)
     val scored: RDD[(Posting, Int)]                        = scoredPostings(grouped)
+    val scored2: RDD[(Posting, Int)]                       = scoredPostings2(raw)
     val vectors: RDD[(Int, Int)]                           = vectorPostings(scored)
 
   }
@@ -75,6 +76,14 @@ class StackOverflowSuite extends FunSuite with BeforeAndAfterAll {
     val scored = testObject.scored
     val res1 = scored.count() == 2
     val res2 = scored.sortBy((tup: (Posting, Int)) => tup._2, ascending = false).first()._2 == 4
+    assert(res1)
+    assert(res2)
+  }
+
+  test("'scoredPostings2' should work.") {
+    val scored2 = testObject.scored2
+    val res1 = scored2.count() == 2
+    val res2 = scored2.sortBy((tup: (Posting, Int)) => tup._2, ascending = false).first()._2 == 4
     assert(res1)
     assert(res2)
   }

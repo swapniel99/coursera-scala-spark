@@ -22,8 +22,9 @@ object StackOverflow extends StackOverflow {
 
     val lines   = sc.textFile("src/main/resources/stackoverflow/stackoverflow.csv")
     val raw     = rawPostings(lines).cache()
-    val grouped = groupedPostings(raw)
-    val scored  = scoredPostings(grouped)
+//    val grouped = groupedPostings(raw)
+//    val scored  = scoredPostings(grouped)
+    val scored = scoredPostings2(raw)
     val vectors = vectorPostings(scored)
 //    assert(vectors.count() == 2121822, "Incorrect number of vectors: " + vectors.count())
 
@@ -106,6 +107,12 @@ class StackOverflow extends Serializable {
     grouped.values.map((it: Iterable[(Posting, Posting)]) => (it.head._1, it.maxBy(_._2.score)._2.score))
   }
 
+  /** Compute the maximum score for each posting without groupByKey */
+  def scoredPostings2(postings: RDD[Posting]): RDD[(Posting, Int)] = {
+    val questions = postings.filter((post: Posting) => post.postingType == 1).map((post: Posting) => (post.id, post))
+    val answers = postings.filter((post: Posting) => post.postingType == 2).map((post: Posting) => (post.parentId.get, post))
+    questions.join(answers).reduceByKey((t1: (Posting, Posting), t2: (Posting, Posting)) => if (t1._2.score > t2._2.score) t1 else t2).values.mapValues(_.score)
+  }
 
   /** Compute the vectors for the kmeans */
   def vectorPostings(scored: RDD[(Posting, Int)]): RDD[(Int, Int)] = {
