@@ -1,5 +1,5 @@
 # coursera-scala-spark
-Programming assignments of https://www.coursera.org/learn/scala-spark-big-data/home/welcome
+Programming assignments of Coursera: [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data/home/welcome)
 
 This repository contains:
 - Solutions to the assignments.
